@@ -8,7 +8,7 @@ void EAPP_ENTRY eapp_entry(){
 
   edge_init();
 
-  ocall_print_buffer("Ciao bella!\n");
+  ocall_print_buffer("Ciao!\n");
 
   EAPP_RETURN(0);
 }
