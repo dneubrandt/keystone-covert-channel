@@ -27,6 +27,21 @@ typedef uint32_t INST;
 #define L1I_WORD_COUNT (L1I_SIZE/sizeof(INST))
 #define L1I_ALIGNMENT (4*256*16)
 
+// BHT dimensions
+#define BHT_ENTRIES 64
+#define BHT_COUNTER_BITS    2 //to evaluate the number of passes for training
+
+typedef void sig_br(WORD rs1, WORD rs2);
+
+// A structure of the size the number of bht entries + 1 (for last return instruction) where we can easily write instructions
+typedef volatile struct {
+    INST entries[BHT_ENTRIES+1];
+} __attribute__ ((aligned (256))) //TODO: I get a bug with smaller alignments // aligment in bytes
+bht_work_area;
+
+#define RET_OPCODE      0x00008067  // opcode for "ret"
+#define BLT01_OPCODE    0xB54063    // opcode for "blt a0, a1, 0"
+
 typedef void sig_fun(void);
 
 // A structure of the size of L1D

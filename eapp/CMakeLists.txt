@@ -1,7 +1,7 @@
 add_executable(eapp-trojan.riscv
   eapp-trojan.c
   edge_wrapper.c
-  l1i.c)
+  bht.c)
 
 include_directories(include
   ${KEYSTONE_SDK_DIR}/include/app)

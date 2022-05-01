@@ -42,7 +42,7 @@ find_program(MAKESELF makeself)
 add_subdirectory(eapp)
 
 set(host_bin host-spy.riscv)
-set(host_src host/host-spy.cpp host/edge_wrapper.cpp host/l1i.cpp)
+set(host_src host/host-spy.cpp host/edge_wrapper.cpp host/bht.cpp)
 set(eyrie_plugins "freemem")
 set(package_name "test-covert-channel.ke")
 set(package_script "./test-covert-channel.riscv")
