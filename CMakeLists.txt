@@ -1,21 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 enable_language(C CXX ASM)
 
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra -O2")
+# set(CMAKE_C_FLAGS "-O2")
+
 # check if SDK has been built and KEYSTONE_SDK_DIR environment variable exists
 if (NOT DEFINED ENV{KEYSTONE_SDK_DIR})
   message(FATAL_ERROR "Please set KEYSTONE_SDK_DIR environment variable to an installed SDK path")
 endif()
 set(KEYSTONE_SDK_DIR $ENV{KEYSTONE_SDK_DIR})
-
-# if (NOT DEFINED ENV{LIBSODIUM_CLIENT_DIR})
-#   message(FATAL_ERROR "Please set LIBSODIUM_CLIENT_DIR")
-# endif()
-# set(LIBSODIUM_CLIENT_DIR $ENV{LIBSODIUM_CLIENT_DIR})
-
-# if (NOT DEFINED ENV{LIBSODIUM_DIR})
-#   message(FATAL_ERROR "Please set LIBSODIUM_DIR")
-# endif()
-# set(LIBSODIUM_DIR $ENV{LIBSODIUM_DIR})
 
 include($ENV{KEYSTONE_SDK_DIR}/cmake/macros.cmake)
 
@@ -45,18 +38,6 @@ set(KEYSTONE_LIB_EAPP ${KEYSTONE_SDK_DIR}/lib/libkeystone-eapp.a)
 # find program "makeself"
 find_program(MAKESELF makeself)
 
-# # trusted client
-# add_executable(trusted_client.riscv
-#   trusted_client/client.cpp
-#   trusted_client/trusted_client.cpp
-#   include/enclave_expected_hash.h
-#   include/sm_expected_hash.h
-# )
-
-# target_link_libraries(trusted_client.riscv
-#   ${KEYSTONE_LIB_VERIFIER}
-#   ${LIBSODIUM_CLIENT_DIR}/.libs/libsodium.a)
-
 # enclave
 add_subdirectory(eapp)
 
@@ -68,6 +49,9 @@ set(package_script "./test-covert-channel.riscv")
 
 add_executable(${host_bin} ${host_src})
 target_link_libraries(${host_bin} ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} ${KEYSTONE_LIB_VERIFIER})
+# set_target_properties(${host_bin}
+#   PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO
+# )
 
 set(eyrie_files_to_copy eyrie-rt)
 add_eyrie_runtime(${eapp_bin}-eyrie

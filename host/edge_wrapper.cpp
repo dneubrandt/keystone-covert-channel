@@ -10,9 +10,13 @@ int edge_init(Keystone::Enclave* enclave){
 
   enclave->registerOcallDispatch(incoming_call_dispatch);
   register_call(OCALL_PRINT_BUFFER, print_buffer_wrapper);
+  register_call(OCALL_PRINT_VALUE, print_value_wrapper);
+  register_call(OCALL_PRIME_CACHE, prime_cache_wrapper);
+  register_call(OCALL_PROBE_CACHE, probe_cache_wrapper);
 
   edge_call_init_internals((uintptr_t)enclave->getSharedBuffer(),
 			   enclave->getSharedBufferSize());
+  return 0;
 }
 
 void print_buffer_wrapper(void* buffer)
@@ -47,3 +51,52 @@ void print_buffer_wrapper(void* buffer)
 
 }
 
+void print_value_wrapper(void* buffer)
+{
+  /* For now we assume the call struct is at the front of the shared
+   * buffer. This will have to change to allow nested calls. */
+  struct edge_call* edge_call = (struct edge_call*)buffer;
+
+  uintptr_t call_args;
+  unsigned long ret_val;
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
+    edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
+    return;
+  }
+
+  print_value(*(unsigned long*)call_args);
+
+  edge_call->return_data.call_status = CALL_STATUS_OK;
+  return;
+}
+
+void prime_cache_wrapper(void* buffer)
+{
+  /* For now we assume the call struct is at the front of the shared
+   * buffer. This will have to change to allow nested calls. */
+  struct edge_call* edge_call = (struct edge_call*)buffer;
+
+  prime_cache();
+
+  edge_call->return_data.call_status = CALL_STATUS_OK;
+  return;
+}
+
+void probe_cache_wrapper(void* buffer) {
+  /* For now we assume the call struct is at the front of the shared
+   * buffer. This will have to change to allow nested calls. */
+  struct edge_call* edge_call = (struct edge_call*)buffer;
+
+  uintptr_t call_args;
+  size_t args_len;
+  if(edge_call_args_ptr(edge_call, &call_args, &args_len) != 0){
+    edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
+    return;
+  }
+
+  probe_cache(*(int*)call_args);
+
+  edge_call->return_data.call_status = CALL_STATUS_OK;
+  return;
+}
